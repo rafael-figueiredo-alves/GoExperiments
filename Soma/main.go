@@ -10,4 +10,7 @@ func main() {
 	fmt.Scanln(&num1, &num2)
 
 	fmt.Println("O resultado da soma entre", num1, " e ", num2, " é ", num1+num2)
+
+	fmt.Println("Pressione qualquer tecla para encerrar aplicação")
+	fmt.Scanln()
 }
