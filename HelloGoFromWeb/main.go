@@ -27,7 +27,11 @@ func main() {
 		fmt.Fprintf(w, "Exibindo página: %s\n", r.URL.Path)
 	})
 
-	http.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/ping", func(Response http.ResponseWriter, Request *http.Request) {
+		fmt.Fprintf(Response, "Pong")
+	})
+
+	http.HandleFunc("POST /user", func(w http.ResponseWriter, r *http.Request) {
 		var user = User{
 			Firstname: "Rafael",
 			Lastname:  "Alves",
