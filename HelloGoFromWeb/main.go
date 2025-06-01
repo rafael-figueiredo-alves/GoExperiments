@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 )
 
 type User struct {
@@ -17,21 +18,23 @@ func main() {
 
 	log.Print("Configurando endpoints")
 
-	http.HandleFunc("/", func(Response http.ResponseWriter, Request *http.Request) {
-		fmt.Fprintf(Response, "Hello, Go, from web endpoint: %s\n", Request.URL.Path)
-	})
+	log.Println("Iniciando endpoints")
 
-	log.Println("Iniciando segundo endpoint")
-
-	http.HandleFunc("/clientes", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("GET /clientes", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Exibindo página: %s\n", r.URL.Path)
 	})
 
-	http.HandleFunc("/ping", func(Response http.ResponseWriter, Request *http.Request) {
+	http.HandleFunc("GET /ping", func(Response http.ResponseWriter, Request *http.Request) {
 		fmt.Fprintf(Response, "Pong")
 	})
 
 	http.HandleFunc("POST /user", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			w.Write([]byte(fmt.Sprintf("HTTP method %q not allowed", r.Method)))
+			return
+		}
+
 		var user = User{
 			Firstname: "Rafael",
 			Lastname:  "Alves",
@@ -41,7 +44,18 @@ func main() {
 		json.NewEncoder(w).Encode(user)
 	})
 
+	http.HandleFunc("GET /", func(Response http.ResponseWriter, Request *http.Request) {
+		if Request.URL.Path != "/" {
+			http.NotFound(Response, Request)
+			return
+		}
+		fmt.Fprintf(Response, "Hello, Go, from web endpoint: %s\n", Request.URL.Path)
+	})
+
 	log.Print("Iniciando servidor")
 
-	log.Fatal(http.ListenAndServe(":80", nil))
+	if err := http.ListenAndServe(":80", nil); err != nil {
+		fmt.Printf("Erro durante execução do servidor: %v\n", err)
+		os.Exit(1)
+	}
 }
