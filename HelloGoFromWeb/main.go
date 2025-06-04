@@ -23,6 +23,8 @@ func main() {
 
 	http.HandleFunc("GET /clientes", GetClientes)
 
+	http.HandleFunc("GET /testeheaders", GetTesteHeaders)
+
 	http.HandleFunc("GET /ping", GetPing)
 
 	http.HandleFunc("POST /user", PostUser)
@@ -37,6 +39,10 @@ func main() {
 		fmt.Printf("Erro durante execução do servidor: %v\n", err)
 		os.Exit(1)
 	}
+}
+
+func GetTesteHeaders(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "%s, %s, %s", r.RemoteAddr, r.Method, r.UserAgent())
 }
 
 func GetClientes(w http.ResponseWriter, r *http.Request) {
